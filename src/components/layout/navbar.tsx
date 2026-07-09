@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
-import { User, Menu, X, LogOut } from "lucide-react";
+import { PawPrint, Menu, X, LogOut } from "lucide-react";
 import { useState } from "react";
 import type { Profile } from "@/types";
 
@@ -20,6 +20,13 @@ const NAV_LINKS = [
   { href: "/bookings", label: "Bookings" },
 ];
 
+const MARKETING_LINKS = [
+  { href: "/#services", label: "Services" },
+  { href: "/#pricing", label: "Pricing" },
+  { href: "/#area", label: "Service Area" },
+  { href: "/#contact", label: "Contact" },
+];
+
 export function Navbar({ user, profile }: NavbarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -30,12 +37,28 @@ export function Navbar({ user, profile }: NavbarProps) {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-2">
-            <span className="text-xl font-serif font-bold text-primary">
-              Purrfect Sitters
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <PawPrint className="h-4 w-4" />
+            </span>
+            <span className="text-xl font-display font-bold text-primary">
+              Snuggle Cat Sitter
             </span>
           </Link>
 
           {/* Desktop Nav Links */}
+          {!user && (
+            <div className="hidden md:flex items-center gap-8">
+              {MARKETING_LINKS.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          )}
           {user && (
             <div className="hidden md:flex items-center gap-8">
               {NAV_LINKS.map((link) => (
@@ -105,7 +128,7 @@ export function Navbar({ user, profile }: NavbarProps) {
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button size="sm">Get Started</Button>
+                  <Button size="sm">Book Now</Button>
                 </Link>
               </>
             )}
@@ -125,6 +148,20 @@ export function Navbar({ user, profile }: NavbarProps) {
         </div>
 
         {/* Mobile Menu */}
+        {mobileOpen && !user && (
+          <div className="md:hidden border-t border-border/50 py-4 space-y-2">
+            {MARKETING_LINKS.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-accent/50"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        )}
         {mobileOpen && user && (
           <div className="md:hidden border-t border-border/50 py-4 space-y-2">
             {NAV_LINKS.map((link) => (

@@ -4,7 +4,7 @@ import { resend } from "@/lib/resend";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
 
-const FROM_EMAIL = "Purrfect Sitters <noreply@purrfectsitters.com>";
+const FROM_EMAIL = "Snuggle Cat Sitter <noreply@purrfectsitters.com>";
 
 export async function sendBookingConfirmation(bookingId: string) {
   const supabase = createAdminClient();
@@ -44,10 +44,10 @@ export async function sendBookingConfirmation(bookingId: string) {
       subject: `Booking Confirmed - ${booking.service?.name}`,
       html: `
         <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-          <h1 style="color: #8B3A2F; font-size: 24px;">Booking Confirmed!</h1>
+          <h1 style="color: #7D5A82; font-size: 24px;">Booking Confirmed!</h1>
           <p>Hello ${booking.customer.full_name},</p>
           <p>Your booking has been confirmed. Here are the details:</p>
-          <div style="background: #FDE8E0; padding: 16px; border-radius: 12px; margin: 16px 0;">
+          <div style="background: #FBE4ED; padding: 16px; border-radius: 12px; margin: 16px 0;">
             <p><strong>Service:</strong> ${booking.service?.name}</p>
             <p><strong>Date:</strong> ${formatDate(booking.scheduled_date)}</p>
             <p><strong>Time:</strong> ${formatTime(booking.scheduled_time)}</p>
@@ -55,7 +55,7 @@ export async function sendBookingConfirmation(bookingId: string) {
             <p><strong>Total:</strong> ${formatCurrency(booking.total_amount)}</p>
           </div>
           <p>We'll assign a sitter shortly and notify you.</p>
-          <p style="color: #7A6860; font-size: 14px;">— The Purrfect Sitters Team</p>
+          <p style="color: #8C7A8A; font-size: 14px;">— The Snuggle Cat Sitter Team</p>
         </div>
       `,
     });
@@ -95,19 +95,19 @@ export async function sendPaymentReceipt(bookingId: string) {
     await resend.emails.send({
       from: FROM_EMAIL,
       to: authUser.user.email,
-      subject: "Payment Receipt - Purrfect Sitters",
+      subject: "Payment Receipt - Snuggle Cat Sitter",
       html: `
         <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-          <h1 style="color: #8B3A2F; font-size: 24px;">Payment Receipt</h1>
+          <h1 style="color: #7D5A82; font-size: 24px;">Payment Receipt</h1>
           <p>Hello ${booking.customer.full_name},</p>
           <p>Your payment has been processed successfully.</p>
-          <div style="background: #FDE8E0; padding: 16px; border-radius: 12px; margin: 16px 0;">
+          <div style="background: #FBE4ED; padding: 16px; border-radius: 12px; margin: 16px 0;">
             <p><strong>Amount:</strong> ${formatCurrency(payment.amount)}</p>
             <p><strong>Service:</strong> ${booking.service?.name}</p>
             <p><strong>Date:</strong> ${formatDate(booking.scheduled_date)}</p>
             <p><strong>Status:</strong> Paid</p>
           </div>
-          <p style="color: #7A6860; font-size: 14px;">— The Purrfect Sitters Team</p>
+          <p style="color: #8C7A8A; font-size: 14px;">— The Snuggle Cat Sitter Team</p>
         </div>
       `,
     });
@@ -154,11 +154,11 @@ export async function sendBookingCompleted(bookingId: string) {
       subject: `Visit Completed - ${catNames}`,
       html: `
         <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-          <h1 style="color: #8B3A2F; font-size: 24px;">Visit Completed!</h1>
+          <h1 style="color: #7D5A82; font-size: 24px;">Visit Completed!</h1>
           <p>Hello ${booking.customer.full_name},</p>
           <p>${booking.sitter?.full_name || "Your sitter"} has completed the visit with ${catNames}.</p>
           <p>Check your dashboard for visit notes and photos.</p>
-          <p style="color: #7A6860; font-size: 14px;">— The Purrfect Sitters Team</p>
+          <p style="color: #8C7A8A; font-size: 14px;">— The Snuggle Cat Sitter Team</p>
         </div>
       `,
     });

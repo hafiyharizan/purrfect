@@ -5,7 +5,7 @@ export function EmergencyProtocol() {
   const steps = [
     "Contact the Primary Owner via the 'Call' button in their profile.",
     "If unreachable, call the listed Emergency Vet: Cat Care Clinic (555-0123).",
-    "Notify Purrfect Sitters Support via the Emergency Line.",
+    "Notify Snuggle Cat Sitter Support via the Emergency Line.",
   ];
 
   return (

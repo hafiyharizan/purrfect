@@ -1,24 +1,25 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #FFF5EE;
-  --color-foreground: #2D1810;
-  --color-primary: #8B3A2F;
+  --color-background: #FCF5FA;
+  --color-foreground: #4A3B4A;
+  --color-primary: #7D5A82;
   --color-primary-foreground: #FFFFFF;
-  --color-secondary: #E8A090;
-  --color-secondary-foreground: #2D1810;
-  --color-accent: #FDDDD5;
-  --color-accent-foreground: #2D1810;
-  --color-muted: #7A6860;
-  --color-muted-foreground: #7A6860;
+  --color-secondary: #E48CA0;
+  --color-secondary-foreground: #4A3B4A;
+  --color-accent: #EAD9F0;
+  --color-accent-foreground: #4A3B4A;
+  --color-muted: #8C7A8A;
+  --color-muted-foreground: #8C7A8A;
   --color-card: #FFFFFF;
-  --color-card-foreground: #2D1810;
-  --color-border: #F0DDD5;
-  --color-highlight: #FDE8E0;
+  --color-card-foreground: #4A3B4A;
+  --color-border: #EEDCE9;
+  --color-highlight: #FBE4ED;
   --color-success: #22C55E;
   --color-destructive: #EF4444;
-  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-serif: "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans: var(--font-quicksand), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: var(--font-playfair), Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-display: var(--font-baloo), "Baloo 2", system-ui, sans-serif;
 }
 
 body {
@@ -29,4 +30,15 @@ body {
 
 .font-serif {
   font-family: var(--font-serif);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.bg-watercolor {
+  background-image:
+    radial-gradient(ellipse 60% 50% at 10% 8%, color-mix(in srgb, var(--color-accent) 55%, transparent), transparent),
+    radial-gradient(ellipse 55% 45% at 95% 15%, color-mix(in srgb, var(--color-highlight) 65%, transparent), transparent),
+    radial-gradient(ellipse 50% 40% at 90% 95%, color-mix(in srgb, var(--color-accent) 50%, transparent), transparent);
 }

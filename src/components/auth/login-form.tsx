@@ -19,7 +19,7 @@ export function LoginForm({ redirect }: { redirect?: string }) {
       <CardHeader className="text-center">
         <CardTitle className="text-2xl">Welcome Back</CardTitle>
         <CardDescription>
-          Sign in to your Purrfect Sitters account
+          Sign in to your Snuggle Cat Sitter account
         </CardDescription>
       </CardHeader>
       <CardContent>

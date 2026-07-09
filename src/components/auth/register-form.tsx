@@ -17,9 +17,9 @@ export function RegisterForm() {
   return (
     <Card>
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Join Purrfect Sitters</CardTitle>
+        <CardTitle className="text-2xl">Join Snuggle Cat Sitter</CardTitle>
         <CardDescription>
-          Create an account to book premium cat care
+          Create an account to book your cat&apos;s next snuggle visit
         </CardDescription>
       </CardHeader>
       <CardContent>
