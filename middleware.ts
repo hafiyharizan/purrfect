@@ -6,13 +6,32 @@ const ADMIN_ROUTES = ["/admin"];
 const SITTER_ROUTES = ["/sitter"];
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Supabase isn't configured yet: let public routes through and
+  // send everything else to login instead of crashing.
+  if (!supabaseUrl || !supabaseAnonKey) {
+    if (
+      PUBLIC_ROUTES.some((route) => pathname === route) ||
+      pathname.startsWith("/api/stripe/webhook")
+    ) {
+      return NextResponse.next();
+    }
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(url);
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
@@ -36,8 +55,6 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const { pathname } = request.nextUrl;
 
   // Public routes - accessible to everyone
   if (PUBLIC_ROUTES.some((route) => pathname === route)) {
