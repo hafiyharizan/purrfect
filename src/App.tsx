@@ -1,23 +1,29 @@
 import {
-  Brush,
+  Calculator,
+  Calendar,
   CalendarDays,
   Camera,
   CheckCircle2,
   ChevronDown,
-  CircleDollarSign,
+  ChevronLeft,
+  ChevronRight,
   Clock3,
+  Download,
   Heart,
   Home,
   Instagram,
+  LayoutDashboard,
+  LogOut,
   Mail,
   MapPin,
   MessageCircle,
   PawPrint,
+  Search,
+  Settings,
   ShieldCheck,
-  Sparkles,
-  Trash2,
+  Timer,
   UploadCloud,
-  Utensils,
+  Users,
 } from 'lucide-react';
 import { FormEvent, useEffect, useState } from 'react';
 import heroCat from './assets/hero-watercolor-cat.png';
@@ -63,24 +69,44 @@ const initialForm: BookingRequestInput = {
   confirmationConsent: false,
 };
 
+const landingLinks = [
+  ['Home', '#home'],
+  ['About', '#about'],
+  ['Services', '#services'],
+  ['Pricing', '#pricing'],
+  ['Booking', '#booking'],
+  ['Area', '#area'],
+  ['Reviews', '#reviews'],
+  ['FAQ', '#faq'],
+  ['Contact', '#contact'],
+];
+
+const trustChips = [
+  { icon: Clock3, text: '30-minute snuggle visits' },
+  { icon: Camera, text: 'Daily photo & video updates' },
+  { icon: ShieldCheck, text: 'Trusted, gentle and reliable' },
+];
+
 const serviceItems = [
-  { icon: Utensils, title: 'Feeding & fresh water', text: 'Meals served exactly the way your cat likes them.' },
-  { icon: Trash2, title: 'Litter cleaning', text: 'Clean trays, tidy surrounds, and a fresher home.' },
-  { icon: Sparkles, title: 'Snuggles & playtime', text: 'Gentle company for shy cats and playful sessions for confident cats.' },
-  { icon: Camera, title: 'Daily photo & video updates', text: 'Sweet check-ins so you can relax while away.' },
-  { icon: Brush, title: 'Tidy pet mess', text: 'Quick tidy-ups for mess made by your cat during the visit.' },
+  { icon: FoodBowlIcon, title: 'Feeding and fresh water' },
+  { icon: LitterScoopIcon, title: 'Litter cleaning' },
+  { icon: YarnIcon, title: 'Snuggles and playtime' },
+  { icon: PhotoIcon, title: 'Daily photo & video updates' },
+  { icon: BroomIcon, title: 'Tidy up mess made by pet' },
 ];
 
 const pricingCards = [
   {
     title: VISIT_PLANS.single.label,
     price: `$${VISIT_PLANS.single.dailyRate}`,
+    unit: 'per day',
     detail: '1 x 30-minute visit',
     icon: Clock3,
   },
   {
     title: VISIT_PLANS.twice.label,
     price: `$${VISIT_PLANS.twice.dailyRate}`,
+    unit: 'per day',
     detail: '2 x 30-minute visits',
     icon: PawPrint,
     featured: true,
@@ -88,26 +114,27 @@ const pricingCards = [
   {
     title: 'Additional 30 minutes',
     price: `$${EXTRA_MINUTES_RATE_PER_VISIT}`,
-    detail: 'Per visit, extra snuggles',
-    icon: CircleDollarSign,
+    unit: 'per visit',
+    detail: 'Add extra snuggles',
+    icon: Timer,
   },
 ];
 
 const testimonials = [
   {
-    name: 'Emma, Southern River',
+    name: 'Jess, Southern River',
     quote:
-      'Farah sent the sweetest updates every day. Our cat was calm, fed, and clearly loved while we were away.',
+      'Snuggle Cat Sitter looked after my two furbabies while we were overseas. Daily updates made me feel so at ease!',
   },
   {
     name: 'Amanda, Harrisdale',
     quote:
-      'So gentle and thoughtful. My shy cat warmed up quickly and the litter area was spotless when we got home.',
+      'So gentle, reliable and thoughtful. My shy boy was warmed up straight away and the litter area was spotless.',
   },
   {
     name: 'Daniel, Piara Waters',
     quote:
-      'The photo and video updates were the highlight of our trip. Everything felt easy and trustworthy.',
+      'Our go-to cat sitter! The photos and videos are the highlight of our trips. Everything felt easy and trustworthy.',
   },
 ];
 
@@ -138,6 +165,13 @@ const faqItems = [
     answer:
       'No. Your request is subject to confirmation so dates, location, care needs, and travel can be checked first.',
   },
+];
+
+const adminFeatures = [
+  { icon: ShieldCheck, title: 'Insured & reliable', text: 'Your cat is in safe and caring hands.' },
+  { icon: Heart, title: 'Personalised care', text: 'Every visit tailored to your cat’s needs.' },
+  { icon: Camera, title: 'Daily updates', text: 'Photos & videos so you never miss a moment.' },
+  { icon: MapPin, title: 'Local & trusted', text: 'Proudly caring for cats in Perth.' },
 ];
 
 type Route = 'home' | 'admin';
@@ -174,254 +208,253 @@ export default function App() {
     );
   };
 
-  return (
-    <div className="app-shell">
-      <Header route={route} />
-      {route === 'admin' ? (
-        <AdminDashboard bookings={bookings} onStatusChange={handleStatusChange} />
-      ) : (
-        <LandingPage onBookingCreated={handleBookingCreated} />
-      )}
-    </div>
-  );
-}
+  if (route === 'admin') {
+    return <AdminDashboard bookings={bookings} onStatusChange={handleStatusChange} />;
+  }
 
-const landingLinks = [
-  ['About', '#about'],
-  ['Services', '#services'],
-  ['Pricing', '#pricing'],
-  ['Booking', '#booking'],
-  ['Area', '#area'],
-  ['FAQ', '#faq'],
-];
-
-function Header({ route }: { route: Route }) {
-  return (
-    <header className="site-header">
-      <a className="brand" href="#home" aria-label="Snuggle Cat Sitter home">
-        <LineCat className="brand-cat" />
-        <span>
-          <strong>Snuggle</strong>
-          <small>Cat Sitter</small>
-        </span>
-      </a>
-
-      <nav className="site-nav" aria-label="Primary navigation">
-        {route === 'home' ? (
-          landingLinks.map(([label, href]) => (
-            <a href={href} key={href}>
-              {label}
-            </a>
-          ))
-        ) : (
-          <a href="#booking">Back to site</a>
-        )}
-        <a className="nav-admin" href="#admin">
-          Admin
-        </a>
-      </nav>
-
-      <a className="header-cta" href={route === 'home' ? '#booking' : '#home'}>
-        <PawPrint aria-hidden="true" size={18} />
-        {route === 'home' ? 'Book a Visit' : 'View Website'}
-      </a>
-    </header>
-  );
+  return <LandingPage onBookingCreated={handleBookingCreated} />;
 }
 
 function LandingPage({ onBookingCreated }: { onBookingCreated: (booking: BookingRequest) => void }) {
   return (
-    <main>
-      <section className="hero-section" id="home">
-        <div className="hero-copy">
-          <h1>Loving Cat Sitting in Perth</h1>
-          <p>
-            Daily snuggles, feeding, litter care, and photo updates while you’re away.
-          </p>
-          <div className="hero-actions">
-            <a className="primary-button" href="#booking">
-              <PawPrint aria-hidden="true" size={19} />
-              Book a Visit
+    <div className="app-shell">
+      <header className="site-header">
+        <a className="brand" href="#home" aria-label="Snuggle Cat Sitter home">
+          <LineCat className="brand-cat" />
+          <span>
+            <strong>Snuggle</strong>
+            <small>Cat Sitter</small>
+          </span>
+        </a>
+
+        <nav className="site-nav" aria-label="Primary navigation">
+          {landingLinks.map(([label, href]) => (
+            <a href={href} key={href}>
+              {label}
             </a>
-            <a className="secondary-button" href="#pricing">
-              View Pricing
-            </a>
-          </div>
-          <div className="trust-strip" aria-label="Visit highlights">
-            <span>
-              <Clock3 aria-hidden="true" size={18} />
-              30-minute snuggle visits
-            </span>
-            <span>
-              <Camera aria-hidden="true" size={18} />
-              Daily photo updates
-            </span>
-            <span>
-              <ShieldCheck aria-hidden="true" size={18} />
-              Gentle and reliable
-            </span>
-          </div>
-        </div>
-
-        <div className="hero-visual" aria-label="Watercolor cat with lavender flowers">
-          <img src={heroCat} alt="Watercolor illustration of a fluffy cat with lavender flowers" />
-          <LineCat className="hero-line-cat" />
-        </div>
-      </section>
-
-      <section className="section about-section" id="about">
-        <div className="section-heading">
-          <PawPrint aria-hidden="true" size={22} />
-          <h2>About Snuggle Cat Sitter</h2>
-        </div>
-        <div className="about-grid">
-          <p>
-            Snuggle Cat Sitter offers reliable, gentle in-home care for busy cat owners,
-            holidays, work trips, and short getaways. Every visit is calm, caring, and
-            tailored to your cat’s routine, so they can stay comfortable in their own home.
-          </p>
-          <div className="about-cards" aria-label="Care qualities">
-            <MiniCard icon={Heart} title="Personalised care" text="Every cat is different, so each visit follows your notes." />
-            <MiniCard icon={ShieldCheck} title="Safe and trustworthy" text="Care details, emergency contact, and vet notes stay easy to access." />
-            <MiniCard icon={Home} title="Local and convenient" text={`${SERVICE_AREA.center} and nearby suburbs are the main service area.`} />
-          </div>
-        </div>
-      </section>
-
-      <section className="section services-section" id="services">
-        <div className="section-heading centered">
-          <Sparkles aria-hidden="true" size={22} />
-          <h2>30-Minute Snuggle Visit Includes</h2>
-        </div>
-        <div className="service-grid">
-          {serviceItems.map((item) => (
-            <article className="service-card" key={item.title}>
-              <span className="icon-bubble">
-                <item.icon aria-hidden="true" size={28} />
-              </span>
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-            </article>
           ))}
-        </div>
-      </section>
+        </nav>
 
-      <section className="section pricing-section" id="pricing">
-        <div className="section-heading centered">
-          <CircleDollarSign aria-hidden="true" size={22} />
-          <h2>Simple & Fair Pricing</h2>
-        </div>
-        <div className="pricing-grid">
-          {pricingCards.map((card) => (
-            <article className={`pricing-card ${card.featured ? 'featured' : ''}`} key={card.title}>
-              <card.icon aria-hidden="true" size={26} />
-              <h3>{card.title}</h3>
-              {card.featured && <span className="popular-label">Most popular</span>}
-              <strong>{card.price}</strong>
-              <p>{card.detail}</p>
-            </article>
-          ))}
-        </div>
-        <p className="pricing-note">Customized packages available. Additional travel fee applies outside service area.</p>
-      </section>
+        <a className="header-cta" href="#booking">
+          <PawPrint aria-hidden="true" size={17} />
+          Book a Visit
+        </a>
+      </header>
 
-      <BookingSection onBookingCreated={onBookingCreated} />
-
-      <section className="section area-section" id="area">
-        <div className="area-copy">
-          <div className="section-heading">
-            <MapPin aria-hidden="true" size={22} />
-            <h2>{SERVICE_AREA.center} Service Area</h2>
+      <main>
+        <section className="hero-section" id="home">
+          <FlowerSprig className="flower hero-flower-left" />
+          <div className="hero-copy">
+            <h1>
+              Loving <em>Cat</em>
+              <br />
+              Sitting in <em>Perth</em>
+            </h1>
+            <p>Daily snuggles, feeding, litter care, and photo updates while you’re away.</p>
+            <div className="hero-actions">
+              <a className="primary-button" href="#booking">
+                <PawPrint aria-hidden="true" size={19} />
+                Book a Visit
+              </a>
+              <a className="secondary-button" href="#pricing">
+                View Pricing
+              </a>
+            </div>
+            <div className="trust-strip" aria-label="Visit highlights">
+              {trustChips.map((chip) => (
+                <span key={chip.text}>
+                  <i className="chip-icon">
+                    <chip.icon aria-hidden="true" size={17} />
+                  </i>
+                  {chip.text}
+                </span>
+              ))}
+            </div>
           </div>
-          <p>
-            Serving {SERVICE_AREA.center} and surrounding suburbs within {SERVICE_AREA.radiusKm}km.
-            Outside the service area? You can still request a visit and an additional travel fee
-            will be confirmed before booking.
+
+          <div className="hero-visual">
+            <img src={heroCat} alt="Watercolor illustration of a fluffy cat with lavender flowers" />
+            <LineCat className="hero-line-cat" />
+            <Heart className="hero-heart" aria-hidden="true" size={22} />
+            <FlowerSprig className="flower hero-flower-right" />
+          </div>
+        </section>
+
+        <section className="section about-section" id="about">
+          <div className="about-grid">
+            <div className="about-copy">
+              <div className="section-heading">
+                <h2>About Snuggle Cat Sitter</h2>
+                <Heart aria-hidden="true" size={20} />
+              </div>
+              <p>
+                Snuggle Cat Sitter offers loving, reliable in-home care for your cat while
+                you’re away. Whether it’s a holiday, work trip or a short getaway, your cat
+                will get gentle care, playtime, snuggles and daily updates so you can relax
+                with peace of mind.
+              </p>
+              <div className="about-cards" aria-label="Care qualities">
+                <MiniCard icon={Heart} title="Personalised care" text="Every cat is unique." />
+                <MiniCard icon={ShieldCheck} title="Safe & trustworthy" text="Insured and experienced." />
+                <MiniCard icon={Home} title="Local & convenient" text={`${SERVICE_AREA.center} & surrounding suburbs.`} />
+              </div>
+            </div>
+            <div className="about-photo">
+              <img src={heroCat} alt="A happy, well-cared-for cat" />
+              <PawPrint className="about-paw" aria-hidden="true" size={22} />
+            </div>
+          </div>
+        </section>
+
+        <section className="section services-section" id="services">
+          <div className="section-heading centered">
+            <h2>30-Minute Snuggle Visit Includes</h2>
+          </div>
+          <div className="service-grid">
+            {serviceItems.map((item) => (
+              <article className="service-card" key={item.title}>
+                <span className="icon-bubble">
+                  <item.icon />
+                </span>
+                <h3>{item.title}</h3>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section pricing-section" id="pricing">
+          <FlowerSprig className="flower pricing-flower-left" />
+          <FlowerSprig className="flower pricing-flower-right" />
+          <div className="section-heading centered">
+            <h2>Simple & Fair Pricing</h2>
+            <PawPrint aria-hidden="true" size={20} />
+          </div>
+          <div className="pricing-grid">
+            {pricingCards.map((card) => (
+              <article className={`pricing-card ${card.featured ? 'featured' : ''}`} key={card.title}>
+                {card.featured && <span className="popular-label">Most Popular</span>}
+                <h3>{card.title}</h3>
+                <strong>{card.price}</strong>
+                <span className="price-unit">{card.unit}</span>
+                <p>
+                  <card.icon aria-hidden="true" size={15} />
+                  {card.detail}
+                </p>
+              </article>
+            ))}
+          </div>
+          <p className="pricing-note">
+            Customized packages available — just ask! <Heart aria-hidden="true" size={14} />
           </p>
+        </section>
+
+        <BookingSection onBookingCreated={onBookingCreated} />
+
+        <section className="section area-section" id="area">
+          <div className="area-copy">
+            <div className="section-heading">
+              <MapPin aria-hidden="true" size={20} />
+              <h2>Our Service Area</h2>
+            </div>
+            <p>
+              {SERVICE_AREA.center} and surrounding suburbs within {SERVICE_AREA.radiusKm}km.
+            </p>
+            <p className="area-note">Outside this area? Additional travel fee applies.</p>
+          </div>
+          <div className="map-card" aria-label={`Map placeholder showing ${SERVICE_AREA.center} ${SERVICE_AREA.radiusKm}km service area`}>
+            <div className="map-grid" />
+            <div className="service-ring">
+              <span>{SERVICE_AREA.radiusKm}km</span>
+            </div>
+            <div className="map-pin">
+              <MapPin aria-hidden="true" size={28} />
+              <strong>{SERVICE_AREA.center}</strong>
+            </div>
+          </div>
           <SuburbChecker />
-        </div>
-        <div className="map-card" aria-label={`Map placeholder showing ${SERVICE_AREA.center} ${SERVICE_AREA.radiusKm}km service area`}>
-          <div className="map-grid" />
-          <div className="service-ring">
-            <span>{SERVICE_AREA.radiusKm}km</span>
-          </div>
-          <div className="map-pin">
-            <MapPin aria-hidden="true" size={30} />
-            <strong>{SERVICE_AREA.center}</strong>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="section testimonials-section" id="reviews">
-        <div className="section-heading centered">
-          <Heart aria-hidden="true" size={22} />
-          <h2>What Cat Parents Say</h2>
-        </div>
-        <div className="testimonial-grid">
-          {testimonials.map((testimonial) => (
-            <article className="testimonial-card" key={testimonial.name}>
-              <div className="stars" aria-label="5 stars">★★★★★</div>
-              <p>“{testimonial.quote}”</p>
-              <strong>{testimonial.name}</strong>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="section faq-section" id="faq">
-        <div className="section-heading centered">
-          <MessageCircle aria-hidden="true" size={22} />
-          <h2>Frequently Asked Questions</h2>
-        </div>
-        <div className="faq-grid">
-          {faqItems.map((item) => (
-            <details className="faq-item" key={item.question}>
-              <summary>
-                {item.question}
-                <ChevronDown aria-hidden="true" size={18} />
-              </summary>
-              <p>{item.answer}</p>
-            </details>
-          ))}
-        </div>
-      </section>
-
-      <section className="section contact-section" id="contact">
-        <div>
-          <div className="section-heading">
-            <Mail aria-hidden="true" size={22} />
-            <h2>Get in Touch</h2>
+        <section className="section testimonials-section" id="reviews">
+          <div className="section-heading centered">
+            <h2>What Cat Parents Say</h2>
+            <Heart aria-hidden="true" size={20} />
           </div>
-          <p>Ready to plan gentle care for your cat? Send a message with your dates and suburb.</p>
-        </div>
-        <div className="contact-actions">
-          <a className="contact-card" href={`mailto:${email}`}>
-            <Mail aria-hidden="true" size={24} />
-            <span>
-              <small>Email</small>
-              {email}
-            </span>
-          </a>
-          <a className="contact-card" href={instagramUrl} target="_blank" rel="noreferrer">
-            <Instagram aria-hidden="true" size={24} />
-            <span>
-              <small>Instagram</small>
-              {instagramHandle}
-            </span>
-          </a>
-          <a className="primary-button" href={instagramUrl} target="_blank" rel="noreferrer">
-            <Instagram aria-hidden="true" size={19} />
-            Message on Instagram
-          </a>
-        </div>
-      </section>
+          <div className="testimonial-grid">
+            {testimonials.map((testimonial) => (
+              <article className="testimonial-card" key={testimonial.name}>
+                <div className="stars" aria-label="5 stars">★★★★★</div>
+                <p>“{testimonial.quote}”</p>
+                <strong>— {testimonial.name}</strong>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section faq-section" id="faq">
+          <div className="section-heading centered">
+            <h2>Frequently Asked Questions</h2>
+            <PawPrint aria-hidden="true" size={20} />
+          </div>
+          <div className="faq-grid">
+            {faqItems.map((item) => (
+              <details className="faq-item" key={item.question}>
+                <summary>
+                  {item.question}
+                  <ChevronDown aria-hidden="true" size={18} />
+                </summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        <section className="section contact-section" id="contact">
+          <div className="contact-inner">
+            <div className="section-heading">
+              <PawPrint aria-hidden="true" size={20} />
+              <h2>Get in Touch</h2>
+            </div>
+            <div className="contact-actions">
+              <a className="contact-card" href={`mailto:${email}`}>
+                <Mail aria-hidden="true" size={22} />
+                <span>
+                  <small>Email</small>
+                  {email}
+                </span>
+              </a>
+              <a className="contact-card" href={instagramUrl} target="_blank" rel="noreferrer">
+                <Instagram aria-hidden="true" size={22} />
+                <span>
+                  <small>Instagram</small>
+                  {instagramHandle}
+                </span>
+              </a>
+              <a className="primary-button contact-cta" href={instagramUrl} target="_blank" rel="noreferrer">
+                <Instagram aria-hidden="true" size={19} />
+                <span>
+                  Message on Instagram
+                  <small>Let’s chat!</small>
+                </span>
+              </a>
+            </div>
+          </div>
+          <div className="contact-art">
+            <SleepingCat className="sleeping-cat" />
+            <p className="script-text">
+              Where cats are loved like family <Heart aria-hidden="true" size={16} />
+            </p>
+            <FlowerSprig className="flower contact-flower" />
+          </div>
+        </section>
+      </main>
 
       <footer className="site-footer">
-        <PawPrint aria-hidden="true" size={18} />
+        <PawPrint aria-hidden="true" size={17} />
         <span>Snuggles delivered daily. Perth, WA</span>
-        <PawPrint aria-hidden="true" size={18} />
+        <Heart aria-hidden="true" size={16} />
+        <a className="footer-admin" href="#admin">Admin</a>
       </footer>
-    </main>
+    </div>
   );
 }
 
@@ -431,6 +464,8 @@ function BookingSection({ onBookingCreated }: { onBookingCreated: (booking: Book
   const [confirmation, setConfirmation] = useState<BookingRequest | null>(null);
 
   const estimate = calculateBookingEstimate(form);
+  const plan = VISIT_PLANS[form.visitFrequency];
+  const ratePerDay = plan.dailyRate + (form.extraMinutes ? EXTRA_MINUTES_RATE_PER_VISIT * plan.visitsPerDay : 0);
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -447,7 +482,10 @@ function BookingSection({ onBookingCreated }: { onBookingCreated: (booking: Book
       return;
     }
 
-    setForm((current) => ({ ...current, [field]: type === 'number' ? Number(value) : value }));
+    setForm((current) => ({
+      ...current,
+      [field]: type === 'number' || field === 'numberOfCats' ? Number(value) : value,
+    }));
   };
 
   const handlePhoto = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -473,44 +511,47 @@ function BookingSection({ onBookingCreated }: { onBookingCreated: (booking: Book
   return (
     <section className="section booking-section" id="booking">
       <div className="booking-heading">
-        <div className="section-heading">
-          <CalendarDays aria-hidden="true" size={22} />
-          <h2>Book a Visit</h2>
-        </div>
-        <p>Tell us about your cat’s routine. Your request will be checked and confirmed before the booking is locked in.</p>
+        <h2>
+          Book a Visit <Heart aria-hidden="true" size={22} />
+        </h2>
+        <p>We can’t wait to meet your kitty!</p>
+        <SittingCat className="booking-cat" />
       </div>
 
       <div className="booking-layout">
         <form className="booking-form" onSubmit={handleSubmit} noValidate>
           <div className="form-grid two-columns">
-            <Field label="Owner name" name="ownerName" error={errors.ownerName} required>
-              <input id="ownerName" name="ownerName" value={form.ownerName} onChange={handleChange} placeholder="Your full name" required />
+            <Field label="Owner Name" name="ownerName" error={errors.ownerName} required>
+              <input id="ownerName" name="ownerName" value={form.ownerName} onChange={handleChange} placeholder="Enter your name" required />
             </Field>
-            <Field label="Email" name="email" error={errors.email} required>
+            <Field label="Email Address" name="email" error={errors.email} required>
               <input id="email" name="email" type="email" value={form.email} onChange={handleChange} placeholder="you@example.com" required />
             </Field>
-            <Field label="Phone number" name="phone" error={errors.phone} required>
+            <Field label="Phone Number" name="phone" error={errors.phone} required>
               <input id="phone" name="phone" value={form.phone} onChange={handleChange} placeholder="04XX XXX XXX" required />
             </Field>
-            <Field label="Address/suburb" name="addressSuburb" error={errors.addressSuburb} required>
-              <input id="addressSuburb" name="addressSuburb" value={form.addressSuburb} onChange={handleChange} placeholder="Southern River or full address" required />
+            <Field label="Suburb / Address" name="addressSuburb" error={errors.addressSuburb} required>
+              <input id="addressSuburb" name="addressSuburb" value={form.addressSuburb} onChange={handleChange} placeholder="Enter suburb or full address" required />
             </Field>
-            <Field label="Number of cats" name="numberOfCats" error={errors.numberOfCats} required>
-              <input id="numberOfCats" name="numberOfCats" type="number" min="1" value={form.numberOfCats} onChange={handleChange} required />
+            <Field label="Number of Cats" name="numberOfCats" error={errors.numberOfCats} required>
+              <select id="numberOfCats" name="numberOfCats" value={form.numberOfCats} onChange={handleChange}>
+                {[1, 2, 3, 4, 5, 6].map((count) => (
+                  <option key={count} value={count}>
+                    {count === 6 ? '6+' : count}
+                  </option>
+                ))}
+              </select>
             </Field>
-            <Field label="Cat names" name="catNames" error={errors.catNames} required>
-              <input id="catNames" name="catNames" value={form.catNames} onChange={handleChange} placeholder="Milo, Luna" required />
+            <Field label="Cat Names" name="catNames" error={errors.catNames} required>
+              <input id="catNames" name="catNames" value={form.catNames} onChange={handleChange} placeholder="e.g. Milo, Luna" required />
             </Field>
-            <Field label="Start date" name="startDate" error={errors.startDate} required>
+            <Field label="Start Date" name="startDate" error={errors.startDate} required>
               <input id="startDate" name="startDate" type="date" value={form.startDate} onChange={handleChange} required />
             </Field>
-            <Field label="End date" name="endDate" error={errors.endDate} required>
+            <Field label="End Date" name="endDate" error={errors.endDate} required>
               <input id="endDate" name="endDate" type="date" value={form.endDate} onChange={handleChange} required />
             </Field>
-          </div>
-
-          <div className="form-grid two-columns">
-            <Field label="Preferred visit frequency" name="visitFrequency" error={errors.visitFrequency} required>
+            <Field label="Preferred Visit Frequency" name="visitFrequency" error={errors.visitFrequency} required>
               <select id="visitFrequency" name="visitFrequency" value={form.visitFrequency} onChange={handleChange}>
                 {(Object.keys(VISIT_PLANS) as VisitFrequency[]).map((frequency) => (
                   <option key={frequency} value={frequency}>
@@ -519,7 +560,7 @@ function BookingSection({ onBookingCreated }: { onBookingCreated: (booking: Book
                 ))}
               </select>
             </Field>
-            <Field label="Add extra 30 minutes?" name="extraMinutes">
+            <Field label="Add Extra 30 Minutes?" name="extraMinutes">
               <div className="radio-row">
                 <label>
                   <input
@@ -529,7 +570,7 @@ function BookingSection({ onBookingCreated }: { onBookingCreated: (booking: Book
                     onChange={() => setForm((current) => ({ ...current, extraMinutes: true }))}
                     type="radio"
                   />
-                  Yes
+                  Yes <small>(+${EXTRA_MINUTES_RATE_PER_VISIT} per visit)</small>
                 </label>
                 <label>
                   <input
@@ -545,38 +586,38 @@ function BookingSection({ onBookingCreated }: { onBookingCreated: (booking: Book
             </Field>
           </div>
 
-          <Field label="Feeding instructions" name="feedingInstructions" error={errors.feedingInstructions} required>
+          <Field label="Feeding Instructions" name="feedingInstructions" error={errors.feedingInstructions} required>
             <textarea
               id="feedingInstructions"
               name="feedingInstructions"
               value={form.feedingInstructions}
               onChange={handleChange}
-              placeholder="Food type, portions, schedule, treats..."
+              placeholder="Tell us about food type, portion, schedule..."
               required
             />
           </Field>
-          <Field label="Litter instructions" name="litterInstructions" error={errors.litterInstructions} required>
+          <Field label="Litter Instructions" name="litterInstructions" error={errors.litterInstructions} required>
             <textarea
               id="litterInstructions"
               name="litterInstructions"
               value={form.litterInstructions}
               onChange={handleChange}
-              placeholder="Litter type, tray location, cleaning preferences..."
+              placeholder="Litter type, location, preferences..."
               required
             />
           </Field>
-          <Field label="Medication/special care notes" name="specialCareNotes">
+          <Field label="Medication / Special Care Notes" name="specialCareNotes">
             <textarea
               id="specialCareNotes"
               name="specialCareNotes"
               value={form.specialCareNotes}
               onChange={handleChange}
-              placeholder="Medication, hiding spots, anxiety, door rules, or anything helpful."
+              placeholder="Any medication, health or special care we should know..."
             />
           </Field>
 
           <div className="form-grid two-columns">
-            <Field label="Emergency contact" name="emergencyContact" error={errors.emergencyContact} required>
+            <Field label="Emergency Contact" name="emergencyContact" error={errors.emergencyContact} required>
               <input
                 id="emergencyContact"
                 name="emergencyContact"
@@ -586,7 +627,7 @@ function BookingSection({ onBookingCreated }: { onBookingCreated: (booking: Book
                 required
               />
             </Field>
-            <Field label="Vet details" name="vetDetails" error={errors.vetDetails} required>
+            <Field label="Vet Details" name="vetDetails" error={errors.vetDetails} required>
               <input
                 id="vetDetails"
                 name="vetDetails"
@@ -598,11 +639,12 @@ function BookingSection({ onBookingCreated }: { onBookingCreated: (booking: Book
             </Field>
           </div>
 
+          <span className="upload-label">Upload a Photo of Your Cat (optional)</span>
           <label className="upload-box">
             <UploadCloud aria-hidden="true" size={26} />
             <span>
-              <strong>Upload a cat photo</strong>
-              <small>{form.catPhotoName || 'Optional. JPG, PNG, or HEIC name will be saved with the request.'}</small>
+              <strong>{form.catPhotoName || 'Click to upload or drag and drop'}</strong>
+              <small>JPG, PNG up to 5MB</small>
             </span>
             <input accept="image/*" onChange={handlePhoto} type="file" />
           </label>
@@ -615,7 +657,7 @@ function BookingSection({ onBookingCreated }: { onBookingCreated: (booking: Book
               onChange={handleChange}
               type="checkbox"
             />
-            <span>I understand booking is subject to confirmation.</span>
+            <span>I understand booking is subject to confirmation. <em>*</em></span>
           </label>
           {errors.confirmationConsent && <p className="field-error">{errors.confirmationConsent}</p>}
 
@@ -634,28 +676,37 @@ function BookingSection({ onBookingCreated }: { onBookingCreated: (booking: Book
           )}
         </form>
 
-        <aside className="estimate-panel" aria-live="polite">
-          <div className="estimate-title">
-            <span>Estimated total</span>
-            <CircleDollarSign aria-hidden="true" size={24} />
-          </div>
-          <dl>
-            <div>
-              <dt>Duration</dt>
-              <dd>{pluralize(estimate.days, 'day')}</dd>
+        <div className="booking-side">
+          <aside className="estimate-panel" aria-live="polite">
+            <div className="estimate-title">
+              <span>Estimated Total</span>
+              <Calculator aria-hidden="true" size={22} />
             </div>
-            <div>
-              <dt>Visits per day</dt>
-              <dd>{estimate.visitsPerDay}</dd>
-            </div>
-            <div>
-              <dt>Extra 30 mins</dt>
-              <dd>{form.extraMinutes ? 'Yes' : 'No'}</dd>
-            </div>
-          </dl>
-          <strong>{formatCurrency(estimate.total)}</strong>
-          <p>Final price may vary if outside service area or for customized packages.</p>
-        </aside>
+            <dl>
+              <div>
+                <dt>Duration</dt>
+                <dd>{pluralize(estimate.days, 'day')}</dd>
+              </div>
+              <div>
+                <dt>Visits per day</dt>
+                <dd>{pluralize(estimate.visitsPerDay, 'visit')}</dd>
+              </div>
+              <div>
+                <dt>Extra 30 mins</dt>
+                <dd>{form.extraMinutes ? 'Yes' : 'No'}</dd>
+              </div>
+              <div>
+                <dt>Rate per day</dt>
+                <dd>${ratePerDay}</dd>
+              </div>
+            </dl>
+            <span className="estimate-label">Estimated total</span>
+            <strong>{formatCurrency(estimate.total)}</strong>
+            <p>Final price may vary if outside service area or for customized packages.</p>
+          </aside>
+          <SittingCat className="side-cat" />
+          <FlowerSprig className="flower side-flower" />
+        </div>
       </div>
     </section>
   );
@@ -688,25 +739,40 @@ function Field({
 
 function SuburbChecker() {
   const [value, setValue] = useState('');
-  const result = !value.trim()
-    ? 'Enter a suburb or postcode for a quick guide.'
-    : isLikelyInServiceArea(value)
-      ? 'Looks likely within the usual service area. Final travel will be confirmed.'
-      : 'Please request a booking and travel fee will be confirmed if needed.';
+  const [result, setResult] = useState<string | null>(null);
+
+  const handleCheck = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setResult(
+      !value.trim()
+        ? 'Please enter a suburb or postcode first.'
+        : isLikelyInServiceArea(value)
+          ? 'Looks likely within the usual service area. Final travel will be confirmed.'
+          : 'Please request a booking and travel fee will be confirmed if needed.',
+    );
+  };
 
   return (
-    <div className="suburb-checker">
-      <label htmlFor="suburb-check">Check your suburb</label>
+    <form className="suburb-checker" onSubmit={handleCheck}>
+      <h3>Check Your Suburb</h3>
       <input
-        id="suburb-check"
+        aria-label="Suburb or postcode"
         value={value}
-        onChange={(event) => setValue(event.target.value)}
-        placeholder="Suburb or postcode"
+        onChange={(event) => {
+          setValue(event.target.value);
+          setResult(null);
+        }}
+        placeholder="Enter suburb or postcode"
       />
-      <p>{result}</p>
-    </div>
+      <button className="primary-button" type="submit">Check</button>
+      {result && <p>{result}</p>}
+    </form>
   );
 }
+
+const ADMIN_PAGE_SIZE = 6;
+
+type DateFilter = 'all' | 'upcoming' | 'past';
 
 function AdminDashboard({
   bookings,
@@ -715,123 +781,315 @@ function AdminDashboard({
   bookings: BookingRequest[];
   onStatusChange: (id: string, status: BookingStatus) => void;
 }) {
-  const [filter, setFilter] = useState<BookingStatus | 'All'>('All');
-  const filteredBookings = filter === 'All' ? bookings : bookings.filter((booking) => booking.status === filter);
-  const statusCounts = bookings.reduce(
-    (counts, booking) => {
-      counts[booking.status] += 1;
-      return counts;
-    },
-    { Pending: 0, Confirmed: 0, Completed: 0 } as Record<BookingStatus, number>,
+  const [statusFilter, setStatusFilter] = useState<BookingStatus | 'All'>('All');
+  const [dateFilter, setDateFilter] = useState<DateFilter>('all');
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const displayNumbers = new Map(
+    bookings.map((booking, index) => [booking.id, 1000 + bookings.length - index]),
   );
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredBookings = bookings.filter((booking) => {
+    if (statusFilter !== 'All' && booking.status !== statusFilter) {
+      return false;
+    }
+
+    if (dateFilter !== 'all') {
+      const end = parseLocalDate(booking.endDate);
+      const isPast = !!end && end.getTime() < today.getTime();
+      if (dateFilter === 'past' ? !isPast : isPast) {
+        return false;
+      }
+    }
+
+    if (normalizedQuery) {
+      const haystack = `${booking.ownerName} ${booking.email} ${booking.addressSuburb} ${booking.catNames}`.toLowerCase();
+      if (!haystack.includes(normalizedQuery)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  const pageCount = Math.max(1, Math.ceil(filteredBookings.length / ADMIN_PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const pageStart = (currentPage - 1) * ADMIN_PAGE_SIZE;
+  const pageBookings = filteredBookings.slice(pageStart, pageStart + ADMIN_PAGE_SIZE);
+
+  const applyFilter = <T,>(setter: (value: T) => void) => (value: T) => {
+    setter(value);
+    setPage(1);
+  };
+
+  const setStatus = applyFilter(setStatusFilter);
+  const setDates = applyFilter(setDateFilter);
+  const setSearch = applyFilter(setQuery);
+
+  const handleExport = () => {
+    const header = [
+      'ID', 'Owner', 'Email', 'Phone', 'Suburb', 'Cats', 'Cat names', 'Start', 'End',
+      'Visits/day', 'Extra 30 mins', 'Estimated total', 'Status', 'Submitted',
+    ];
+    const rows = filteredBookings.map((booking) => [
+      `#${displayNumbers.get(booking.id)}`,
+      booking.ownerName,
+      booking.email,
+      booking.phone,
+      booking.addressSuburb,
+      booking.numberOfCats,
+      booking.catNames,
+      booking.startDate,
+      booking.endDate,
+      VISIT_PLANS[booking.visitFrequency].visitsPerDay,
+      booking.extraMinutes ? 'Yes' : 'No',
+      booking.estimate.total,
+      booking.status,
+      booking.submittedAt,
+    ]);
+    const csv = [header, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'booking-requests.csv';
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+
   return (
-    <main className="admin-page">
-      <section className="admin-hero">
-        <div>
-          <h1>Booking Requests</h1>
-          <p>View customer details, dates, estimates, care notes, and keep each request moving.</p>
-        </div>
-        <a className="secondary-button" href="#booking">
-          <PawPrint aria-hidden="true" size={18} />
-          New request
+    <div className="admin-shell">
+      <aside className="admin-sidebar">
+        <a className="brand admin-brand" href="#home" aria-label="Snuggle Cat Sitter home">
+          <LineCat className="brand-cat" />
+          <span>
+            <strong>Snuggle</strong>
+            <small>Cat Sitter</small>
+          </span>
         </a>
-      </section>
+        <nav className="side-nav" aria-label="Admin navigation">
+          <span className="side-link"><LayoutDashboard aria-hidden="true" size={18} />Dashboard</span>
+          <span className="side-link active"><CalendarDays aria-hidden="true" size={18} />Bookings</span>
+          <span className="side-link"><Calendar aria-hidden="true" size={18} />Calendar</span>
+          <span className="side-link"><Users aria-hidden="true" size={18} />Clients</span>
+          <span className="side-link"><MessageCircle aria-hidden="true" size={18} />Messages</span>
+          <span className="side-link"><Settings aria-hidden="true" size={18} />Settings</span>
+        </nav>
+        <a className="side-link logout" href="#home">
+          <LogOut aria-hidden="true" size={18} />
+          Log out
+        </a>
+      </aside>
 
-      <section className="admin-stats" aria-label="Booking summary">
-        <StatCard label="Total requests" value={bookings.length} />
-        {BOOKING_STATUSES.map((status) => (
-          <StatCard key={status} label={status} value={statusCounts[status]} />
-        ))}
-      </section>
+      <div className="admin-main">
+        <header className="admin-topbar">
+          <h1>Booking Requests</h1>
+          <button className="primary-button export-button" type="button" onClick={handleExport}>
+            <Download aria-hidden="true" size={17} />
+            Export
+          </button>
+        </header>
 
-      <section className="admin-board">
-        <div className="admin-toolbar">
-          <div>
-            <h2>Customer Requests</h2>
-            <p>Saved locally in this browser for easy owner review.</p>
-          </div>
-          <label>
-            Status
-            <select value={filter} onChange={(event) => setFilter(event.target.value as BookingStatus | 'All')}>
-              <option value="All">All</option>
+        <div className="admin-board">
+          <div className="admin-filters">
+            <select
+              aria-label="Filter by status"
+              value={statusFilter}
+              onChange={(event) => setStatus(event.target.value as BookingStatus | 'All')}
+            >
+              <option value="All">All Status</option>
               {BOOKING_STATUSES.map((status) => (
                 <option key={status} value={status}>{status}</option>
               ))}
             </select>
-          </label>
+            <select
+              aria-label="Filter by dates"
+              value={dateFilter}
+              onChange={(event) => setDates(event.target.value as DateFilter)}
+            >
+              <option value="all">All Dates</option>
+              <option value="upcoming">Upcoming</option>
+              <option value="past">Past</option>
+            </select>
+            <label className="admin-search">
+              <Search aria-hidden="true" size={16} />
+              <input
+                value={query}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search name, email or suburb..."
+              />
+            </label>
+          </div>
+
+          {filteredBookings.length === 0 ? (
+            <div className="empty-state">
+              <LineCat className="empty-cat" />
+              <h3>No booking requests {bookings.length > 0 ? 'match your filters' : 'yet'}</h3>
+              <p>Customer requests submitted from the booking form will appear here with care notes and estimates.</p>
+            </div>
+          ) : (
+            <>
+              <div className="booking-table-wrap">
+                <table className="booking-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Client</th>
+                      <th>Dates</th>
+                      <th>Visits / Day</th>
+                      <th>Est. Total</th>
+                      <th>Status</th>
+                      <th>Updated</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pageBookings.map((booking) => (
+                      <BookingRow
+                        key={booking.id}
+                        booking={booking}
+                        displayNumber={displayNumbers.get(booking.id)!}
+                        expanded={expandedId === booking.id}
+                        onToggle={() => setExpandedId((current) => (current === booking.id ? null : booking.id))}
+                        onStatusChange={onStatusChange}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="admin-pagination">
+                <div className="page-buttons">
+                  <button
+                    type="button"
+                    aria-label="Previous page"
+                    disabled={currentPage === 1}
+                    onClick={() => setPage(currentPage - 1)}
+                  >
+                    <ChevronLeft aria-hidden="true" size={16} />
+                  </button>
+                  {Array.from({ length: pageCount }, (_, index) => index + 1).map((pageNumber) => (
+                    <button
+                      key={pageNumber}
+                      type="button"
+                      className={pageNumber === currentPage ? 'active' : ''}
+                      onClick={() => setPage(pageNumber)}
+                    >
+                      {pageNumber}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    aria-label="Next page"
+                    disabled={currentPage === pageCount}
+                    onClick={() => setPage(currentPage + 1)}
+                  >
+                    <ChevronRight aria-hidden="true" size={16} />
+                  </button>
+                </div>
+                <span>
+                  Showing {pageStart + 1} to {pageStart + pageBookings.length} of {filteredBookings.length}
+                </span>
+              </div>
+            </>
+          )}
         </div>
 
-        {filteredBookings.length === 0 ? (
-          <div className="empty-state">
-            <LineCat className="empty-cat" />
-            <h3>No booking requests yet</h3>
-            <p>Customer requests submitted from the booking form will appear here with care notes and estimates.</p>
-          </div>
-        ) : (
-          <div className="booking-table-wrap">
-            <table className="booking-table">
-              <thead>
-                <tr>
-                  <th>Customer</th>
-                  <th>Dates</th>
-                  <th>Cats</th>
-                  <th>Visit plan</th>
-                  <th>Estimate</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredBookings.map((booking) => (
-                  <tr key={booking.id}>
-                    <td>
-                      <strong>{booking.ownerName}</strong>
-                      <span>{booking.email}</span>
-                      <span>{booking.phone}</span>
-                      <span>{booking.addressSuburb}</span>
-                    </td>
-                    <td>
-                      <strong>{formatDate(booking.startDate)} - {formatDate(booking.endDate)}</strong>
-                      <span>{pluralize(booking.estimate.days, 'day')}</span>
-                      <span>Submitted {formatDateTime(booking.submittedAt)}</span>
-                    </td>
-                    <td>
-                      <strong>{booking.catNames}</strong>
-                      <span>{pluralize(booking.numberOfCats, 'cat')}</span>
-                      {booking.catPhotoName && <span>Photo: {booking.catPhotoName}</span>}
-                    </td>
-                    <td>
-                      <strong>{VISIT_PLANS[booking.visitFrequency].label}</strong>
-                      <span>{booking.extraMinutes ? 'Extra 30 mins added' : 'Standard 30 mins'}</span>
-                      <span>{booking.specialCareNotes || 'No special care notes'}</span>
-                    </td>
-                    <td>
-                      <strong>{formatCurrency(booking.estimate.total)}</strong>
-                      <span>{booking.feedingInstructions}</span>
-                      <span>{booking.litterInstructions}</span>
-                    </td>
-                    <td>
-                      <select
-                        className={`status-select ${booking.status.toLowerCase()}`}
-                        value={booking.status}
-                        onChange={(event) => onStatusChange(booking.id, event.target.value as BookingStatus)}
-                        aria-label={`Status for ${booking.ownerName}`}
-                      >
-                        {BOOKING_STATUSES.map((status) => (
-                          <option key={status} value={status}>{status}</option>
-                        ))}
-                      </select>
-                      <span>{booking.emergencyContact}</span>
-                      <span>{booking.vetDetails}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-    </main>
+        <div className="admin-features" aria-label="Why cat parents trust us">
+          {adminFeatures.map((feature) => (
+            <article key={feature.title}>
+              <span className="icon-bubble small">
+                <feature.icon aria-hidden="true" size={20} />
+              </span>
+              <h3>{feature.title}</h3>
+              <p>{feature.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BookingRow({
+  booking,
+  displayNumber,
+  expanded,
+  onToggle,
+  onStatusChange,
+}: {
+  booking: BookingRequest;
+  displayNumber: number;
+  expanded: boolean;
+  onToggle: () => void;
+  onStatusChange: (id: string, status: BookingStatus) => void;
+}) {
+  const plan = VISIT_PLANS[booking.visitFrequency];
+
+  return (
+    <>
+      <tr className={expanded ? 'expanded' : ''}>
+        <td>
+          <button className="row-toggle" type="button" onClick={onToggle} aria-expanded={expanded}>
+            <ChevronDown aria-hidden="true" size={14} />
+            #{displayNumber}
+          </button>
+        </td>
+        <td>
+          <strong>{booking.ownerName}</strong>
+          <span>{booking.email}</span>
+        </td>
+        <td>
+          <strong>{formatDateShort(booking.startDate)} – {formatDateShort(booking.endDate)}</strong>
+          <span>({pluralize(booking.estimate.days, 'day')})</span>
+        </td>
+        <td>
+          <strong>{pluralize(plan.visitsPerDay, 'visit')}</strong>
+          {booking.extraMinutes && <span>+ 30 mins</span>}
+        </td>
+        <td>
+          <strong>{formatCurrency(booking.estimate.total)}</strong>
+        </td>
+        <td>
+          <select
+            className={`status-pill ${booking.status.toLowerCase()}`}
+            value={booking.status}
+            onChange={(event) => onStatusChange(booking.id, event.target.value as BookingStatus)}
+            aria-label={`Status for ${booking.ownerName}`}
+          >
+            {BOOKING_STATUSES.map((status) => (
+              <option key={status} value={status}>{status}</option>
+            ))}
+          </select>
+        </td>
+        <td>
+          <span>{formatDateTime(booking.updatedAt)}</span>
+        </td>
+      </tr>
+      {expanded && (
+        <tr className="detail-row">
+          <td colSpan={7}>
+            <dl>
+              <div><dt>Phone</dt><dd>{booking.phone}</dd></div>
+              <div><dt>Suburb / Address</dt><dd>{booking.addressSuburb}</dd></div>
+              <div><dt>Cats</dt><dd>{booking.catNames} ({pluralize(booking.numberOfCats, 'cat')})</dd></div>
+              <div><dt>Feeding</dt><dd>{booking.feedingInstructions}</dd></div>
+              <div><dt>Litter</dt><dd>{booking.litterInstructions}</dd></div>
+              <div><dt>Special care</dt><dd>{booking.specialCareNotes || 'No special care notes'}</dd></div>
+              <div><dt>Emergency contact</dt><dd>{booking.emergencyContact}</dd></div>
+              <div><dt>Vet details</dt><dd>{booking.vetDetails}</dd></div>
+              {booking.catPhotoName && <div><dt>Photo</dt><dd>{booking.catPhotoName}</dd></div>}
+            </dl>
+          </td>
+        </tr>
+      )}
+    </>
   );
 }
 
@@ -846,18 +1104,11 @@ function MiniCard({
 }) {
   return (
     <article className="mini-card">
-      <Icon aria-hidden={true} size={23} />
+      <span className="icon-bubble small">
+        <Icon aria-hidden={true} size={20} />
+      </span>
       <h3>{title}</h3>
       <p>{text}</p>
-    </article>
-  );
-}
-
-function StatCard({ label, value }: { label: string; value: number }) {
-  return (
-    <article className="stat-card">
-      <span>{label}</span>
-      <strong>{value}</strong>
     </article>
   );
 }
@@ -882,6 +1133,137 @@ function LineCat({ className }: { className?: string }) {
   );
 }
 
+function SittingCat({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 120 140" fill="none" aria-hidden="true">
+      <path
+        d="M36 32c-2-10 1-18 6-24l12 12c4-1 8-1 12 0l12-12c5 6 8 14 6 24 6 10 8 22 8 36 0 28-14 44-32 44S28 96 28 68c0-14 2-26 8-36Z"
+        stroke="currentColor"
+        strokeWidth="3.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M47 44c2 2 5 2 7 0m12 0c2 2 5 2 7 0M55 55h10M52 62c5 4 11 4 16 0"
+        stroke="currentColor"
+        strokeWidth="3.4"
+        strokeLinecap="round"
+      />
+      <path
+        d="M92 108c14 2 22-6 19-19M46 112v12m28-12v12"
+        stroke="currentColor"
+        strokeWidth="3.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function SleepingCat({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 170 100" fill="none" aria-hidden="true">
+      <path
+        d="M24 68c0-24 22-42 54-42 30 0 56 16 56 40 0 16-12 26-30 26H52c-17 0-28-10-28-24Z"
+        stroke="currentColor"
+        strokeWidth="3.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M96 28l7-13 9 11m8 2 9-10 5 13"
+        stroke="currentColor"
+        strokeWidth="3.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M103 52c3 3 7 3 10 0m14 0c3 3 7 3 10 0M26 76c9 10 26 13 39 7"
+        stroke="currentColor"
+        strokeWidth="3.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function FlowerSprig({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 90 110" fill="none" aria-hidden="true">
+      <path d="M45 108c-4-26-2-48 8-70M45 108c2-20-2-38-14-52" stroke="#b7d3b0" strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M38 74c-8-1-13-6-15-13 8-1 14 2 17 9M56 60c8-2 12-8 13-15-8 0-14 4-16 11" fill="#cfe3c8" />
+      <g fill="#f3b7d3">
+        <ellipse cx="53" cy="26" rx="7" ry="11" />
+        <ellipse cx="53" cy="26" rx="7" ry="11" transform="rotate(72 53 26)" />
+        <ellipse cx="53" cy="26" rx="7" ry="11" transform="rotate(144 53 26)" />
+        <ellipse cx="53" cy="26" rx="7" ry="11" transform="rotate(216 53 26)" />
+        <ellipse cx="53" cy="26" rx="7" ry="11" transform="rotate(288 53 26)" />
+      </g>
+      <circle cx="53" cy="26" r="5" fill="#e8a0c4" />
+      <g fill="#d9c4ec">
+        <ellipse cx="28" cy="46" rx="5" ry="8" />
+        <ellipse cx="28" cy="46" rx="5" ry="8" transform="rotate(72 28 46)" />
+        <ellipse cx="28" cy="46" rx="5" ry="8" transform="rotate(144 28 46)" />
+        <ellipse cx="28" cy="46" rx="5" ry="8" transform="rotate(216 28 46)" />
+        <ellipse cx="28" cy="46" rx="5" ry="8" transform="rotate(288 28 46)" />
+      </g>
+      <circle cx="28" cy="46" r="3.6" fill="#b493d8" />
+    </svg>
+  );
+}
+
+function FoodBowlIcon() {
+  return (
+    <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <path d="M12 34h30l-4 14c-1 3-3 5-6 5h-10c-3 0-5-2-6-5l-4-14Z" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9 34h36" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
+      <path d="M20 26c0-3 3-5 7-5s7 2 7 5M46 42h10l-2 8c-1 2-2 3-4 3h-1" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M46 20c3-4 8-4 10 0-2 4-7 4-10 0Zm10 0 4-3m-4 3 4 3" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function LitterScoopIcon() {
+  return (
+    <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <rect x="8" y="32" width="32" height="18" rx="5" stroke="currentColor" strokeWidth="3.2" />
+      <path d="M16 41h.1m8 4h.1m6-5h.1" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+      <path d="M44 34 56 16m-14 8 8 6c3 2 7-1 6-5l-2-7" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function YarnIcon() {
+  return (
+    <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <circle cx="27" cy="36" r="15" stroke="currentColor" strokeWidth="3.2" />
+      <path d="M14 30c8-4 18-4 26 0M13 41c9 4 19 4 27 0M27 21c-5 9-5 21 0 30" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M42 36c8 0 12 4 12 9s-5 8-9 6" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function PhotoIcon() {
+  return (
+    <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <rect x="8" y="20" width="48" height="32" rx="7" stroke="currentColor" strokeWidth="3.2" />
+      <path d="M22 20l4-7h12l4 7" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="32" cy="36" r="9" stroke="currentColor" strokeWidth="3.2" />
+      <path d="M47 28h.1" stroke="currentColor" strokeWidth="4.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function BroomIcon() {
+  return (
+    <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <path d="M40 8 26 30" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
+      <path d="M17 44c2-8 5-12 9-14l10 7c-1 5-4 9-10 13l-11 6c-2 1-3-1-2-3l4-9Z" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M26 46l-4 7m10-4-6 6" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M48 34h.1m4 10h.1m-8 8h.1" stroke="currentColor" strokeWidth="3.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function getRouteFromHash(): Route {
   return window.location.hash === '#admin' ? 'admin' : 'home';
 }
@@ -892,10 +1274,9 @@ const currencyFormatter = new Intl.NumberFormat('en-AU', {
   maximumFractionDigits: 0,
 });
 
-const dateFormatter = new Intl.DateTimeFormat('en-AU', {
+const dateShortFormatter = new Intl.DateTimeFormat('en-AU', {
   day: 'numeric',
   month: 'short',
-  year: 'numeric',
 });
 
 const dateTimeFormatter = new Intl.DateTimeFormat('en-AU', {
@@ -907,9 +1288,9 @@ function formatCurrency(value: number) {
   return currencyFormatter.format(value);
 }
 
-function formatDate(value: string) {
+function formatDateShort(value: string) {
   const date = parseLocalDate(value);
-  return date ? dateFormatter.format(date) : 'Not set';
+  return date ? dateShortFormatter.format(date) : 'Not set';
 }
 
 function formatDateTime(value: string) {
