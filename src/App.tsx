@@ -10,7 +10,6 @@ import {
   Clock3,
   Download,
   Heart,
-  Home,
   Instagram,
   LayoutDashboard,
   LogOut,
@@ -82,9 +81,9 @@ const landingLinks = [
 ];
 
 const trustChips = [
-  { icon: Clock3, text: '30-minute snuggle visits' },
-  { icon: Camera, text: 'Daily photo & video updates' },
-  { icon: ShieldCheck, text: 'Trusted, gentle and reliable' },
+  '30-minute snuggle visits',
+  'Daily photo & video updates',
+  'Trusted, gentle and reliable',
 ];
 
 const serviceItems = [
@@ -243,12 +242,13 @@ function LandingPage({ onBookingCreated }: { onBookingCreated: (booking: Booking
 
       <main>
         <section className="hero-section" id="home">
-          <FlowerSprig className="flower hero-flower-left" />
+          <FloralCluster className="floral hero-floral-bl" />
+          <FloralCluster className="floral hero-floral-tr" />
           <div className="hero-copy">
             <h1>
-              Loving <em>Cat</em>
+              Loving Cat
               <br />
-              Sitting in <em>Perth</em>
+              Sitting in Perth
             </h1>
             <p>Daily snuggles, feeding, litter care, and photo updates while you’re away.</p>
             <div className="hero-actions">
@@ -261,12 +261,12 @@ function LandingPage({ onBookingCreated }: { onBookingCreated: (booking: Booking
               </a>
             </div>
             <div className="trust-strip" aria-label="Visit highlights">
-              {trustChips.map((chip) => (
-                <span key={chip.text}>
+              {trustChips.map((text) => (
+                <span key={text}>
                   <i className="chip-icon">
-                    <chip.icon aria-hidden="true" size={17} />
+                    <PawPrint aria-hidden="true" size={15} />
                   </i>
-                  {chip.text}
+                  {text}
                 </span>
               ))}
             </div>
@@ -276,11 +276,11 @@ function LandingPage({ onBookingCreated }: { onBookingCreated: (booking: Booking
             <img src={heroCat} alt="Watercolor illustration of a fluffy cat with lavender flowers" />
             <LineCat className="hero-line-cat" />
             <Heart className="hero-heart" aria-hidden="true" size={22} />
-            <FlowerSprig className="flower hero-flower-right" />
           </div>
         </section>
 
         <section className="section about-section" id="about">
+          <FloralCluster className="floral about-floral" />
           <div className="about-grid">
             <div className="about-copy">
               <div className="section-heading">
@@ -296,7 +296,7 @@ function LandingPage({ onBookingCreated }: { onBookingCreated: (booking: Booking
               <div className="about-cards" aria-label="Care qualities">
                 <MiniCard icon={Heart} title="Personalised care" text="Every cat is unique." />
                 <MiniCard icon={ShieldCheck} title="Safe & trustworthy" text="Insured and experienced." />
-                <MiniCard icon={Home} title="Local & convenient" text={`${SERVICE_AREA.center} & surrounding suburbs.`} />
+                <MiniCard icon={MapPin} title="Local & convenient" text={`${SERVICE_AREA.center} & surrounding suburbs.`} />
               </div>
             </div>
             <div className="about-photo">
@@ -323,8 +323,8 @@ function LandingPage({ onBookingCreated }: { onBookingCreated: (booking: Booking
         </section>
 
         <section className="section pricing-section" id="pricing">
-          <FlowerSprig className="flower pricing-flower-left" />
-          <FlowerSprig className="flower pricing-flower-right" />
+          <FloralCluster className="floral pricing-floral-left" />
+          <FloralCluster className="floral pricing-floral-right" />
           <div className="section-heading centered">
             <h2>Simple & Fair Pricing</h2>
             <PawPrint aria-hidden="true" size={20} />
@@ -439,11 +439,11 @@ function LandingPage({ onBookingCreated }: { onBookingCreated: (booking: Booking
             </div>
           </div>
           <div className="contact-art">
+            <FloralCluster className="floral contact-floral" />
             <SleepingCat className="sleeping-cat" />
             <p className="script-text">
               Where cats are loved like family <Heart aria-hidden="true" size={16} />
             </p>
-            <FlowerSprig className="flower contact-flower" />
           </div>
         </section>
       </main>
@@ -1207,6 +1207,53 @@ function FlowerSprig({ className }: { className?: string }) {
         <ellipse cx="28" cy="46" rx="5" ry="8" transform="rotate(288 28 46)" />
       </g>
       <circle cx="28" cy="46" r="3.6" fill="#b493d8" />
+    </svg>
+  );
+}
+
+function Flower({
+  x,
+  y,
+  scale = 1,
+  petal,
+  center,
+}: {
+  x: number;
+  y: number;
+  scale?: number;
+  petal: string;
+  center: string;
+}) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${scale})`}>
+      <g fill={petal}>
+        {[0, 72, 144, 216, 288].map((angle) => (
+          <ellipse key={angle} cx="0" cy="-13" rx="7.5" ry="12" transform={`rotate(${angle})`} />
+        ))}
+      </g>
+      <circle r="5.4" fill={center} />
+    </g>
+  );
+}
+
+function FloralCluster({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 210 220" fill="none" aria-hidden="true">
+      <g opacity="0.85" stroke="#bcd7b4" strokeWidth="3" strokeLinecap="round">
+        <path d="M104 214c-6-42 0-78 18-108" />
+        <path d="M104 214c2-30-8-58-28-80" />
+      </g>
+      <g opacity="0.9">
+        <path d="M92 150c-16-2-26-12-30-27 16-1 29 7 33 23Z" fill="#cfe3c8" />
+        <path d="M120 120c15-7 22-19 21-34-14 3-25 13-27 29Z" fill="#d7e8d0" />
+        <path d="M82 182c-13-3-20-11-22-24 12 0 22 7 25 19Z" fill="#c7dfbf" />
+      </g>
+      <circle cx="158" cy="104" r="7" fill="#f2bcd6" />
+      <circle cx="52" cy="150" r="6" fill="#dcc6ee" />
+      <circle cx="150" cy="150" r="5" fill="#f7cfe0" />
+      <Flower x={128} y={62} scale={1.5} petal="#f4b4d2" center="#e785ba" />
+      <Flower x={70} y={96} scale={1.15} petal="#dcc6ee" center="#b493d8" />
+      <Flower x={116} y={126} scale={0.95} petal="#f8d2e2" center="#ec9fc6" />
     </svg>
   );
 }
