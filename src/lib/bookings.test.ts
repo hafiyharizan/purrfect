@@ -1,40 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
   calculateBookingEstimate,
-  createBookingRequest,
-  listBookingRequests,
-  updateBookingStatus,
+  isLikelyInServiceArea,
+  parseLocalDate,
+  validateBooking,
   type BookingRequestInput,
-  type BookingStatus,
 } from './bookings';
-
-class MemoryStorage implements Storage {
-  private values = new Map<string, string>();
-
-  get length() {
-    return this.values.size;
-  }
-
-  clear() {
-    this.values.clear();
-  }
-
-  getItem(key: string) {
-    return this.values.get(key) ?? null;
-  }
-
-  key(index: number) {
-    return Array.from(this.values.keys())[index] ?? null;
-  }
-
-  removeItem(key: string) {
-    this.values.delete(key);
-  }
-
-  setItem(key: string, value: string) {
-    this.values.set(key, value);
-  }
-}
 
 const baseRequest: BookingRequestInput = {
   ownerName: 'Aisha Rahman',
@@ -100,35 +71,41 @@ describe('calculateBookingEstimate', () => {
   });
 });
 
-describe('booking request storage', () => {
-  it('creates requests with pending status and stores newest first', () => {
-    const storage = new MemoryStorage();
-
-    const first = createBookingRequest(baseRequest, storage);
-    const second = createBookingRequest(
-      { ...baseRequest, ownerName: 'Nadia Lim', catNames: 'Pumpkin' },
-      storage,
-    );
-
-    expect(first.status).toBe<BookingStatus>('Pending');
-    expect(second.estimate.total).toBe(60);
-    expect(listBookingRequests(storage).map((booking) => booking.ownerName)).toEqual([
-      'Nadia Lim',
-      'Aisha Rahman',
-    ]);
+describe('validateBooking', () => {
+  it('accepts a complete, valid request', () => {
+    expect(validateBooking(baseRequest)).toEqual({});
   });
 
-  it('updates a booking status without changing customer details', () => {
-    const storage = new MemoryStorage();
-    const booking = createBookingRequest(baseRequest, storage);
-
-    updateBookingStatus(booking.id, 'Confirmed', storage);
-
-    expect(listBookingRequests(storage)[0]).toMatchObject({
-      id: booking.id,
-      ownerName: 'Aisha Rahman',
-      status: 'Confirmed',
-      catNames: 'Luna, Mochi',
+  it('flags missing required fields, invalid email, and missing consent', () => {
+    const errors = validateBooking({
+      ...baseRequest,
+      ownerName: '  ',
+      email: 'not-an-email',
+      confirmationConsent: false,
     });
+
+    expect(errors.ownerName).toBeDefined();
+    expect(errors.email).toBeDefined();
+    expect(errors.confirmationConsent).toBeDefined();
+  });
+
+  it('flags an end date before the start date', () => {
+    const errors = validateBooking({ ...baseRequest, startDate: '2026-08-05', endDate: '2026-08-03' });
+    expect(errors.endDate).toBeDefined();
+  });
+});
+
+describe('isLikelyInServiceArea', () => {
+  it('matches known suburbs and postcodes', () => {
+    expect(isLikelyInServiceArea('Southern River')).toBe(true);
+    expect(isLikelyInServiceArea('6110')).toBe(true);
+    expect(isLikelyInServiceArea('Fremantle')).toBe(false);
+  });
+});
+
+describe('parseLocalDate', () => {
+  it('parses valid dates and rejects blanks', () => {
+    expect(parseLocalDate('2026-08-01')?.getFullYear()).toBe(2026);
+    expect(parseLocalDate('')).toBeNull();
   });
 });

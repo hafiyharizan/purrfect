@@ -1372,9 +1372,18 @@ summary:focus-visible {
   color: #fff;
 }
 
-.side-link.logout {
+.admin-sidebar > form {
   margin-top: auto;
+}
+
+button.side-link.logout {
+  width: 100%;
+  border: 0;
+  background: none;
   cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
 }
 
 .side-link.logout:hover {
@@ -1742,7 +1751,7 @@ tr.expanded .row-toggle svg {
     padding: 8px 11px;
   }
 
-  .side-link.logout {
+  .admin-sidebar > form {
     margin-top: 0;
     margin-left: auto;
   }
@@ -1857,4 +1866,61 @@ tr.expanded .row-toggle svg {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+/* ---------- Admin login ---------- */
+
+.login-page {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 32px 16px;
+}
+
+.login-card {
+  display: grid;
+  gap: 14px;
+  width: min(400px, 100%);
+  border: 1px solid var(--card-border);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow);
+  padding: 32px 28px;
+}
+
+.login-brand {
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.login-card h1 {
+  margin: 0;
+  color: var(--purple);
+  font-family: var(--serif);
+  font-size: 1.9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.login-card > p {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.login-card .primary-button {
+  margin-top: 4px;
+}
+
+.login-back {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.login-back:hover {
+  color: var(--pink-dark);
 }

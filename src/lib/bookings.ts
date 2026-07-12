@@ -57,7 +57,6 @@ export type BookingRequest = BookingRequestInput & {
   updatedAt: string;
 };
 
-const BOOKING_STORAGE_KEY = 'snuggle-cat-sitter-bookings';
 const DAY_IN_MS = 86_400_000;
 
 export function calculateBookingEstimate(input: BookingEstimateInput): BookingEstimate {
@@ -131,70 +130,6 @@ export function validateBooking(form: BookingRequestInput): Record<string, strin
   return errors;
 }
 
-export function createBookingRequest(
-  input: BookingRequestInput,
-  storage: Storage = window.localStorage,
-): BookingRequest {
-  const now = new Date().toISOString();
-  const booking: BookingRequest = {
-    ...input,
-    id: createId(),
-    status: 'Pending',
-    estimate: calculateBookingEstimate(input),
-    submittedAt: now,
-    updatedAt: now,
-  };
-
-  saveBookings([booking, ...listBookingRequests(storage)], storage);
-  return booking;
-}
-
-export function listBookingRequests(storage: Storage = window.localStorage): BookingRequest[] {
-  const rawBookings = storage.getItem(BOOKING_STORAGE_KEY);
-
-  if (!rawBookings) {
-    return [];
-  }
-
-  try {
-    const parsed = JSON.parse(rawBookings);
-    return Array.isArray(parsed) ? parsed.filter(isBookingRequest) : [];
-  } catch {
-    return [];
-  }
-}
-
-export function updateBookingStatus(
-  id: string,
-  status: BookingStatus,
-  storage: Storage = window.localStorage,
-): BookingRequest | null {
-  let updatedBooking: BookingRequest | null = null;
-  const bookings = listBookingRequests(storage).map((booking) => {
-    if (booking.id !== id) {
-      return booking;
-    }
-
-    updatedBooking = {
-      ...booking,
-      status,
-      updatedAt: new Date().toISOString(),
-    };
-    return updatedBooking;
-  });
-
-  if (!updatedBooking) {
-    return null;
-  }
-
-  saveBookings(bookings, storage);
-  return updatedBooking;
-}
-
-function saveBookings(bookings: BookingRequest[], storage: Storage) {
-  storage.setItem(BOOKING_STORAGE_KEY, JSON.stringify(bookings));
-}
-
 export function parseLocalDate(value: string) {
   if (!value) {
     return null;
@@ -206,32 +141,4 @@ export function parseLocalDate(value: string) {
   }
 
   return new Date(year, month - 1, day);
-}
-
-function createId() {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
-  }
-
-  return `booking-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-}
-
-function isBookingRequest(value: unknown): value is BookingRequest {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-
-  const booking = value as Partial<BookingRequest>;
-  return (
-    typeof booking.id === 'string' &&
-    typeof booking.ownerName === 'string' &&
-    typeof booking.email === 'string' &&
-    typeof booking.catNames === 'string' &&
-    isBookingStatus(booking.status) &&
-    typeof booking.estimate?.total === 'number'
-  );
-}
-
-function isBookingStatus(status: unknown): status is BookingStatus {
-  return typeof status === 'string' && (BOOKING_STATUSES as readonly string[]).includes(status);
 }
