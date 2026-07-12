@@ -1,11 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-const envPort = (globalThis as { process?: { env?: { PORT?: string } } }).process?.env?.PORT;
+const port = Number.parseInt(process.env.PORT || '4173', 10);
 
 export default defineConfig({
   plugins: [react()],
   preview: {
-    port: Number(envPort) || 4173,
+    host: '0.0.0.0',
+    port,
   },
 });
